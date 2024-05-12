@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
       status,
       due_date,
       userId,
-        image,
+      image,
       tags,
     })) || "Error creating todo";
   res.json(todo);

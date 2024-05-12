@@ -21,7 +21,11 @@ router.post("/api/login", async (req, res) => {
     return res.status(401).json({ error: "Incorrect password" });
   }
   const token = generateToken(user);
-  AuthToken.create({ token, userId: user.id,  expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)});
+  AuthToken.create({
+    token,
+    userId: user.id,
+    expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
   res.json({ token, user });
 });
 
@@ -33,7 +37,7 @@ const authenticateToken = async (req, res, next) => {
   const authToken = await AuthToken.findOne({ where: { token } });
   if (!authToken) return res.sendStatus(403);
 
-    return next();
+  return next();
 };
 
 // Logout endpoint
@@ -42,25 +46,30 @@ router.post("/api/logout", authenticateToken, (req, res) => {
   res.json({ message: "User logged out successfully" });
 });
 
+// Image upload endpoint return the file url to be stored in the database or used in the frontend
+// Image upload endpoint receives base64 encoded image and saves it to the uploads folder
 router.post("/api/upload", async (req, res) => {
-  const base64Image = req.body.image;
-  const base64Data = base64Image.replace(/^data:image\/jpeg;base64,/, "");
-  const filename = `${Date.now()}.jpeg`;
-  require("fs").writeFile(`uploads/${filename}`, base64Data, "base64", function (err) {
-    if (err) {
-      console.log(err);
-      res.status(500).json({ error: "Error uploading image" });
-    }
-    res.json({ url: `/uploads/${filename}` });
-  });
+  const { image } = req.body;
+  const base64Data = image.replace(/^data:image\/png;base64,/, "");
+  const fileName = Date.now() + ".png";
+  require("fs").writeFile(
+    `uploads/${fileName}`,
+    base64Data,
+    "base64",
+    function (err) {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ error: "Error uploading image" });
+      }
+      res.json({ url: `/uploads/${fileName}` });
+    },
+  );
 });
 
-router.get("/uploads/:filename", (req, res) => {
-  res.sendFile
-    (path.join(__dirname, `../uploads/${req.params.filename}`));
-}
-);
-
-
+// Serve the uploaded images to use in the frontend as url (example: http://localhost:8080/uploads/1715527153151.png)
+router.get("/uploads/:file", (req, res) => {
+  const file = req.params.file;
+  res.sendFile(file, { root: "uploads" });
+});
 
 module.exports = router;

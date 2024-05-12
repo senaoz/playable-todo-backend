@@ -35,6 +35,19 @@ router.get("/:id/todos", async (req, res) => {
   res.json(todos);
 });
 
+// Update all todo statuses for a user
+router.put("/:id/todos-status", async (req, res) => {
+  const { status } = req.body;
+  await Todo.update({ status }, { where: { userId: req.params.id } });
+  res.json({ message: "Todos updated successfully" });
+});
+
+// Delete all todos for a user
+router.delete("/:id/todos", async (req, res) => {
+  await Todo.destroy({ where: { userId: req.params.id } });
+  res.json({ message: "Todos deleted successfully" });
+});
+
 // Get a user by id
 router.get("/:id", async (req, res) => {
   const user = await User.findByPk(req.params.id);

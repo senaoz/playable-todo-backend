@@ -1,18 +1,19 @@
 const express = require("express");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const cors = require("cors");
-const app = express();
+
 const userRoutes = require("./routes/users");
 const routes = require("./routes");
 const todoRoutes = require("./routes/todo");
 const sequelize = require("./sequelize");
 
 const PORT = process.env.PORT || 8080;
+const app = express();
 
-app.use(bodyParser.json({ limit: '2mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '2mb' }));
-
+app.use(bodyParser.json({ limit: "2mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "2mb" }));
 app.use(cors());
+
 app.use("/", routes);
 app.use("/api/users", userRoutes);
 app.use("/api/todos", todoRoutes);

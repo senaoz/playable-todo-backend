@@ -11,7 +11,11 @@ const sequelize = new Sequelize(
   },
 );
 
-const modelDefiners = [require("../models/user"), require("../models/todo"), require("../models/auth")];
+const modelDefiners = [
+  require("../models/user"),
+  require("../models/todo"),
+  require("../models/auth"),
+];
 
 for (const modelDefiner of modelDefiners) {
   modelDefiner(sequelize);
