@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
+const { models } = require("../sequelize");
 
-const { User } = require("../models/user");
-const { Todo } = require("../models/todo");
+const { User, Todo } = models;
 
 // Create a new user
 router.post("/", async (req, res) => {
@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 
 // Get all todos for a user
 router.get("/:id/todos", async (req, res) => {
-  const todos = await Todo.findAll({ where: { UserId: req.params.id } });
+  const todos = await Todo.findAll({ where: { userId: req.params.id } });
   res.json(todos);
 });
 

@@ -1,16 +1,25 @@
 const express = require("express");
 const router = express.Router();
+const { models } = require("../sequelize");
 
-const { Todo } = require("../models/todo");
+const { Todo } = models;
 
 // Create a new todo
 router.post("/", async (req, res) => {
-  let { title, description, status, due_date, UserId, image, tags } = req.body;
+  let { title, description, status, due_date, userId, image, tags } = req.body;
   status = status || false;
+  due_date = due_date || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   const todo =
-    (await Todo?.create({ title, description, status, due_date, UserId, image, tags })) ||
-    "Error creating todo";
+    (await Todo?.create({
+      title,
+      description,
+      status,
+      due_date,
+      userId,
+        image,
+      tags,
+    })) || "Error creating todo";
   res.json(todo);
 });
 
@@ -22,7 +31,7 @@ router.get("/", async (req, res) => {
 
 // Get a todo by id
 router.get("/:id", async (req, res) => {
-  const todo =await Todo.findByPk(req.params.id);
+  const todo = await Todo.findByPk(req.params.id);
   res.json(todo);
 });
 

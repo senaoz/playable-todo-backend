@@ -1,90 +1,43 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
+const bodyParser = require('body-parser');
 const cors = require("cors");
 const app = express();
-const Sequelize = require("sequelize");
-const config = require("./config/config");
 const userRoutes = require("./routes/users");
+const routes = require("./routes");
 const todoRoutes = require("./routes/todo");
+const sequelize = require("./sequelize");
 
-const sequelize = new Sequelize(
-  config.development.database,
-  config.development.username,
-  config.development.password,
-  {
-    host: config.development.host,
-    dialect: config.development.dialect,
-  },
-);
+const PORT = process.env.PORT || 8080;
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log(
-      "PostgreSQL database connection has been established successfully.",
-    );
-  })
-  .catch((err) => {
-    console.error("PostgreSQL database connection error: ", err);
-  });
+app.use(bodyParser.json({ limit: '2mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '2mb' }));
 
-const modelDefiners = [
-  require('./models/user.js'),
-  require('./models/todo.js'),
-];
-
-for (const modelDefiner of modelDefiners) {
-  modelDefiner(sequelize);
-}
-
-// Middleware to authenticate token
-const authenticateToken = (req, res, next) => {
-  const token = req.headers["authorization"];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
-
-const PORT = process.env.PORT || 3001;
-
-app.use(bodyParser.json());
 app.use(cors());
-
-app.get("/", async (req, res) => {
-  res.send("Hello World");
-});
+app.use("/", routes);
 app.use("/api/users", userRoutes);
 app.use("/api/todos", todoRoutes);
 
-// Login endpoint
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-  const user = User.findOne({ where: { email, password } });
-
-  if (user) {
-    const accessToken = jwt.sign(
-      { email: user.email, id: user.id },
-      process.env.JWT_SECRET,
-    );
-    res.json({ accessToken });
-  } else {
-    res.sendStatus(403);
+async function assertDatabaseConnectionOk() {
+  console.log(`Checking database connection...`);
+  try {
+    await sequelize.authenticate();
+    console.log("Database connection OK!");
+  } catch (error) {
+    console.log("Unable to connect to the database:");
+    console.log(error.message);
+    process.exit(1);
   }
-});
+}
 
-// Logout endpoint
-app.post("/api/logout", authenticateToken, (req, res) => {
-  res.json({ message: "User logged out successfully" });
-});
+async function init() {
+  await assertDatabaseConnectionOk();
+  console.log(`Starting To Do App for Payable Factory on port ${PORT}...`);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(
+      `Express server started on port ${PORT}. Try some routes, such as '/api/users'.`,
+    );
+  });
+}
 
-module.exports = sequelize;
+init();

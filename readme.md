@@ -33,22 +33,23 @@ npm start
 ```
 
 ## Interfaces
+
 ```typescript
 interface Todo {
-    id: string;
-    title: string;
-    description: string;
-    image: string;
-    status: boolean;
-    dueDate: string;
-    tags: string[];
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  status: boolean;
+  dueDate: string;
+  tags: string[];
 }
 
 interface User {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
 }
 ```
 
@@ -65,20 +66,24 @@ interface User {
 - **Response**: { valid: boolean }
 
 ### `GET /api/todos`
+
 - **Request Header**: { Authorization: string }
 - **Response**: { todos: Todo[] }
 
 ### `POST /api/todos`
+
 - **Request Header**: { Authorization: string }
 - **Request Body**: { title: string, description: string, image: File, file: File }
 - **Response**: { todo: Todo }
 
 ### `PUT /api/todos/:id`
+
 - **Request Header**: { Authorization: string }
 - **Request Body**: { title: string, description: string, image: File, file: File }
 - **Response**: { todo: Todo }
 
 ### `DELETE /api/todos/:id`
+
 - **Request Header**: { Authorization: string }
 - **Response**: { message: string }
 - **Error Response**: { message: string }
@@ -88,7 +93,7 @@ interface User {
 
 Veritabanı olarak **PostgreSQL** kullanılarak **todo_db** adında bir veritabanı oluşturulmuştur.
 
-- PostgreSQL'i başarıyla kurduktan sonra, bir veritabanı ve bu veritabanına bağlanacak bir kullanıcı oluşturmalısınız. 
+- PostgreSQL'i başarıyla kurduktan sonra, bir veritabanı ve bu veritabanına bağlanacak bir kullanıcı oluşturmalısınız.
 
 ```bash
 sudo -u postgres psql
@@ -104,13 +109,10 @@ Bu komutlarla **todo_app** adında bir veritabanı oluşturulur ve **todo_user**
 
 ### Veritabanı Bağlantısı
 
-Veritabanı bağlantısı için yukaridaki bilgileri config dosyasına eklenmiştir. 
+Veritabanı bağlantısı için yukaridaki bilgileri config dosyasına eklenmiştir.
 
 `server.js` dosyasını çalıştırarak server'ı başlatabilirsiniz.
 
 ```bash
 node server.js
 ```
-
-
-

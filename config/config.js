@@ -2,10 +2,10 @@ require("dotenv").config();
 
 module.exports = {
   development: {
-    username: "todo_user",
-    password: "password123",
-    database: "todo_app",
-    host: "localhost",
+    username: process.env.DB_USERNAME || "todo_user",
+    password: process.env.DB_PASSWORD || "password123",
+    database: process.env.DB_NAME || "todo_app",
+    host: process.env.DB_HOST,
     dialect: "postgres",
   },
   production: {
