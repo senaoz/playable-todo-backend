@@ -50,26 +50,25 @@ router.post("/api/logout", authenticateToken, (req, res) => {
 // Image upload endpoint receives base64 encoded image and saves it to the uploads folder
 router.post("/api/upload", async (req, res) => {
   const { image } = req.body;
-  const base64Data = image.replace(/^data:image\/png;base64,/, "");
-  const fileName = Date.now() + ".png";
-  require("fs").writeFile(
-    `uploads/${fileName}`,
-    base64Data,
-    "base64",
-    function (err) {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ error: "Error uploading image" });
-      }
-      res.json({ url: `/uploads/${fileName}` });
-    },
-  );
+  if (image) {
+    const base64Data = image.replace(/^data:image\/png;base64,/, "");
+    const fileName = Date.now() + ".png";
+    require("fs").writeFile(
+      `uploads/${fileName}`,
+      base64Data,
+      "base64",
+      function (err) {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ error: "Error uploading image" });
+        }
+        res.json({ url: `/uploads/${fileName}` });
+      },
+    );
+  }
 });
 
 // Serve the uploaded images to use in the frontend as url (example: http://localhost:8080/uploads/1715527153151.png)
-router.get("/uploads/:file", (req, res) => {
-  const file = req.params.file;
-  res.sendFile(file, { root: "uploads" });
-});
+router.use("/uploads", express.static("uploads"));
 
 module.exports = router;
